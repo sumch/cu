@@ -37,3 +37,29 @@ formBridge.events.on('form.show', async function (context) {
     console.error('[cu5] radioタイトル更新エラー:', e);
   }
 });
+//整数、または小数点以下が1桁までの小数を許可する正規表現
+function validateDecimal1(value) {
+  // 正規表現の意味:
+  // ^      : 文字列の先頭
+  // -?     : 負の符号（あってもなくても良い）
+  // \d+    : 1つ以上の数字
+  // (\.\d)?: 小数点とそれに続く1つの数字（あってもなくても良い）
+  // $      : 文字列の末尾
+  const regex = /^-?\d+(\.\d)?$/;
+  return regex.test(value);
+}
+const validateDecimal1Fields = [
+'p07_1',
+'p07_2',
+];
+validateDecimal1Fields.forEach(fc => {
+  formBridge.events.on('form.field.change.' + fc, function(context) {
+    var ts = context.value;
+    if(validateDecimal1(ts)) {
+      context.setFieldValueError(fc, null);
+    } else {
+      context.setFieldValueError(fc, '小数点第１位まで入力ください');
+    }
+    return context;
+  });
+});
